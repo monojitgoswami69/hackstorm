@@ -102,7 +102,10 @@ export default function IssueSinglePage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error?.message || result.error || 'Failed to issue credential');
+        const errMsg = result.error?.message || result.error || 'Failed to issue credential';
+        const details = result.error?.details;
+        const detailStr = Array.isArray(details) ? details.join(', ') : (typeof details === 'string' ? details : JSON.stringify(details));
+        throw new Error(details ? `${errMsg}: ${detailStr}` : errMsg);
       }
       
       toast.success('Credential issued successfully!', {
@@ -111,6 +114,7 @@ export default function IssueSinglePage() {
       
       router.push('/issuer/credentials');
     } catch (error: any) {
+      console.error('Issue error:', error);
       toast.error('Failed to issue credential', {
         description: error.message,
       });

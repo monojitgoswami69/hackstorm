@@ -53,8 +53,9 @@ export default function BatchIssuePage() {
     const lines = content.trim().split('\n');
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-    const emailIndex = headers.findIndex(h => h === 'email' || h === 'recipientemail');
+    const rawHeaders = lines[0].split(',').map(h => h.trim());
+    const lowerHeaders = rawHeaders.map(h => h.toLowerCase());
+    const emailIndex = lowerHeaders.findIndex(h => h === 'email' || h === 'recipientemail');
     
     if (emailIndex === -1) {
       return [{
@@ -65,13 +66,20 @@ export default function BatchIssuePage() {
       }];
     }
 
-    const dataHeaders = headers.filter((_, i) => i !== emailIndex);
+    // Build a mapping from lowercased CSV header -> actual schema field key
+    const selectedSchemaObj = schemas.find((s: any) => s.id === selectedSchema);
+    const schemaFields: any[] = selectedSchemaObj?.fields || [];
+    const fieldKeyMap: Record<string, string> = {};
+    schemaFields.forEach((f: any) => {
+      fieldKeyMap[f.key.toLowerCase()] = f.key;
+    });
 
-    return lines.slice(1).map((line, idx) => {
+    const dataHeaderIndices = rawHeaders.map((_, i) => i).filter(i => i !== emailIndex);
+
+    return lines.slice(1).filter(line => line.trim()).map((line, idx) => {
       const values = line.split(',').map(v => v.trim());
       const email = values[emailIndex];
       
-      // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return {
@@ -83,9 +91,11 @@ export default function BatchIssuePage() {
       }
 
       const data: Record<string, string> = {};
-      dataHeaders.forEach((header, i) => {
-        const valueIndex = i >= emailIndex ? i + 1 : i;
-        data[header] = values[valueIndex] || '';
+      dataHeaderIndices.forEach(i => {
+        const csvHeader = rawHeaders[i].toLowerCase();
+        // Map to schema field key (case-insensitive match), or use raw header
+        const schemaKey = fieldKeyMap[csvHeader] || rawHeaders[i];
+        data[schemaKey] = values[i] || '';
       });
 
       return {
