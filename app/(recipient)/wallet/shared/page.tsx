@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import useSWR from 'swr';
+import { QRCodeSVG } from 'qrcode.react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,8 @@ import {
   AlertCircle,
   Copy,
   ExternalLink,
+  QrCode,
+  X,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -41,6 +44,7 @@ interface ShareToken {
 
 export default function SharedPage() {
   const { data, error, isLoading } = useSWR('/api/recipient/share', fetcher);
+  const [qrLink, setQrLink] = React.useState<string | null>(null);
 
   const shareTokens: ShareToken[] = data?.shareTokens || [];
 
@@ -138,20 +142,30 @@ export default function SharedPage() {
     {
       key: 'actions',
       header: '',
-      className: 'w-[100px]',
+      className: 'w-[140px]',
       cell: (row) => (
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex items-center gap-1 justify-end">
           <Button
             variant="ghost"
             size="icon-sm"
             onClick={() => copyLink(row.shareLink)}
+            title="Copy link"
           >
             <Copy className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon-sm"
+            onClick={() => setQrLink(row.shareLink)}
+            title="Show QR code"
+          >
+            <QrCode className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => window.open(row.shareLink, '_blank')}
+            title="Open link"
           >
             <ExternalLink className="h-4 w-4" />
           </Button>
@@ -241,6 +255,68 @@ export default function SharedPage() {
           data={shareTokens}
           keyExtractor={(row) => row.id}
         />
+      )}
+
+      {/* QR Code Modal */}
+      {qrLink && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setQrLink(null)}
+        >
+          <div
+            className="relative bg-card border border-border rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4 animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="absolute top-3 right-3"
+              onClick={() => setQrLink(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <div className="text-center space-y-5">
+              <div>
+                <h3 className="text-lg font-semibold">Scan to Verify</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Scan this QR code to view the shared credential
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <div className="bg-white p-4 rounded-xl">
+                  <QRCodeSVG
+                    value={qrLink}
+                    size={220}
+                    level="H"
+                    includeMargin={false}
+                    fgColor="#000000"
+                    bgColor="#ffffff"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    copyLink(qrLink);
+                  }}
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy Link
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => window.open(qrLink, '_blank')}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Open
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground break-all">{qrLink}</p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
