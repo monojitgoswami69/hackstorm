@@ -18,6 +18,7 @@ export async function GET() {
         name: schema.name,
         description: schema.description,
         version: schema.version,
+        fields: schema.fields,
         fieldCount: schema.fields.length,
         hideableFieldCount: schema.fields.filter(f => f.hideable).length,
       })),

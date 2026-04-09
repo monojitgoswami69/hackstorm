@@ -156,18 +156,22 @@ export function validateCredentialData(
         }
         break;
 
-      case 'number':
-        if (typeof value !== 'number' || isNaN(value)) {
+      case 'number': {
+        const numValue = typeof value === 'string' ? parseFloat(value) : value;
+        if (typeof numValue !== 'number' || isNaN(numValue)) {
           errors.push(`Field "${field.label}" must be a number`);
         } else {
-          if (field.validation?.min !== undefined && value < field.validation.min) {
+          // Store coerced value back
+          data[field.key] = numValue;
+          if (field.validation?.min !== undefined && numValue < field.validation.min) {
             errors.push(`Field "${field.label}" must be at least ${field.validation.min}`);
           }
-          if (field.validation?.max !== undefined && value > field.validation.max) {
+          if (field.validation?.max !== undefined && numValue > field.validation.max) {
             errors.push(`Field "${field.label}" must be at most ${field.validation.max}`);
           }
         }
         break;
+      }
 
       case 'date':
         const date = new Date(value);
