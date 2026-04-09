@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ interface Credential {
 }
 
 export default function CredentialsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeTab, setActiveTab] = React.useState('all');
   const [selectedCredential, setSelectedCredential] = React.useState<Credential | null>(null);
@@ -146,7 +148,7 @@ export default function CredentialsPage() {
             size="icon-sm"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedCredential(row);
+              router.push(`/issuer/credentials/${row._id}`);
             }}
           >
             <Eye className="h-4 w-4" />
