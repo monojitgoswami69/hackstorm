@@ -15,7 +15,7 @@ import {
 import { getSchema, getHideableFields, getNonHideableFields } from '@/lib/schemas';
 import type { CreateShareRequest, DBShareToken } from '@/types';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://credvault-one.vercel.app';
 
 /**
  * POST /api/recipient/share

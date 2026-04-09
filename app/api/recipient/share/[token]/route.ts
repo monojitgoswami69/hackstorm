@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return forbidden('This share token does not belong to you');
     }
 
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://credvault-one.vercel.app';
 
     return successResponse({
       id: shareToken._id,

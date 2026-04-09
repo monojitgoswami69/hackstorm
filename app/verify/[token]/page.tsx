@@ -191,19 +191,19 @@ export default function PublicVerifyPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Credential Type</p>
-                  <p className="font-medium">{result.credential.type}</p>
+                  <p className="font-medium truncate">{result.credential.type}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Issuer</p>
-                  <p className="font-medium">{result.credential.issuerName}</p>
+                  <p className="font-medium truncate">{result.credential.issuerName}</p>
                 </div>
-                <div className="col-span-2">
+                <div className="sm:col-span-2">
                   <p className="text-sm text-muted-foreground">Issued On</p>
                   <p className="font-medium flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
+                    <Calendar className="w-4 h-4 shrink-0" />
                     {new Date(result.credential.issuedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
@@ -218,19 +218,19 @@ export default function PublicVerifyPage() {
                 <h3 className="text-sm font-medium text-muted-foreground mb-3">Credential Data</h3>
                 <div className="space-y-3">
                   {Object.entries(result.credential.subject).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
-                      <span className="text-muted-foreground capitalize">
+                    <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-border/50 last:border-0 gap-1 sm:gap-4 min-w-0">
+                      <span className="text-muted-foreground capitalize shrink-0 text-sm">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </span>
                       {value === '••••••••' ? (
                         <span className="flex items-center gap-2 text-muted-foreground">
-                          <EyeOff className="w-4 h-4" />
+                          <EyeOff className="w-4 h-4 shrink-0" />
                           Hidden
                         </span>
                       ) : (
-                        <span className="font-medium flex items-center gap-2">
-                          <Eye className="w-4 h-4 text-muted-foreground" />
-                          {String(value)}
+                        <span className="font-medium flex items-center gap-2 min-w-0">
+                          <Eye className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <span className="truncate">{String(value)}</span>
                         </span>
                       )}
                     </div>
@@ -315,14 +315,14 @@ export default function PublicVerifyPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">View Count</p>
+                  <p className="text-muted-foreground">Views</p>
                   <p className="font-medium">
                     {result.shareInfo.viewCount}
                     {result.shareInfo.maxViews && ` / ${result.shareInfo.maxViews}`}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Disclosed Fields</p>
+                  <p className="text-muted-foreground">Disclosed</p>
                   <p className="font-medium">{result.shareInfo.disclosedFields.length}</p>
                 </div>
               </div>
@@ -364,19 +364,19 @@ function VerificationCheck({
   description: string;
 }) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-3">
+    <div className="flex items-start sm:items-center justify-between py-2 gap-2">
+      <div className="flex items-start sm:items-center gap-3 min-w-0">
         {passed ? (
-          <CheckCircle2 className="w-5 h-5 text-primary" />
+          <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5 sm:mt-0" />
         ) : (
-          <XCircle className="w-5 h-5 text-destructive" />
+          <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5 sm:mt-0" />
         )}
-        <div>
-          <p className="font-medium">{label}</p>
-          <p className="text-sm text-muted-foreground">{description}</p>
+        <div className="min-w-0">
+          <p className="font-medium text-sm sm:text-base">{label}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
-      <Badge variant={passed ? 'default' : 'destructive'} className="text-xs">
+      <Badge variant={passed ? 'default' : 'destructive'} className="text-xs shrink-0">
         {passed ? 'Passed' : 'Failed'}
       </Badge>
     </div>
